@@ -11,6 +11,9 @@ export const LoginLayout: FC<LoginLayoutProps> = ({ children, title }) => (
     </Head>
     <Container
       sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
         p: 4,
         minWidth: "100vw",
         minHeight: "100vh",
