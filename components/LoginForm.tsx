@@ -1,6 +1,7 @@
 import FacebookIcon from "@mui/icons-material/Facebook";
 import { Box, Paper, Typography, TextField, Button } from "@mui/material";
 import { signIn } from "next-auth/react";
+import NextLink from "next/link";
 import React, { FC, FormEvent } from "react";
 
 const LoginForm: FC = () => {
@@ -51,7 +52,7 @@ const LoginForm: FC = () => {
       >
         ...or...
       </Typography>
-      <Paper sx={{ p: 3 }}>
+      <Paper sx={{ p: 3, mb: 3 }}>
         <Typography component="h2" variant="h6" align="center" gutterBottom>
           ...with your social media account
         </Typography>
@@ -64,6 +65,21 @@ const LoginForm: FC = () => {
         >
           Facebook
         </Button>
+      </Paper>
+      <Typography
+        component="span"
+        variant="subtitle2"
+        align="center"
+        sx={{ mb: 3 }}
+      >
+        Don&apos;t have an account yet?
+      </Typography>
+      <Paper sx={{ p: 3 }}>
+        <NextLink href="/signup" passHref>
+          <Button type="button" variant="contained" fullWidth>
+            Sign up
+          </Button>
+        </NextLink>
       </Paper>
     </Box>
   );
