@@ -1,6 +1,8 @@
 import NextAuth from "next-auth";
 import FacebookProvider from "next-auth/providers/facebook";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import { prisma } from "config/db";
 
 const FACEBOOK_CLIENT_ID = process.env.FACEBOOK_CLIENT_ID;
 const FACEBOOK_CLIENT_SECRET = process.env.FACEBOOK_CLIENT_SECRET;
@@ -13,6 +15,7 @@ if (!FACEBOOK_CLIENT_SECRET) {
 }
 
 export default NextAuth({
+  adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -31,4 +34,10 @@ export default NextAuth({
       clientSecret: FACEBOOK_CLIENT_SECRET,
     }),
   ],
+  callbacks: {
+    async signIn(data) {
+      console.log(data);
+      return true;
+    },
+  },
 });
