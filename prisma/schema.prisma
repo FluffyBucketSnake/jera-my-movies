@@ -35,13 +35,23 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
+    id            String      @id @default(cuid())
     name          String?
-    email         String?   @unique
+    email         String?     @unique
     emailVerified DateTime?
     image         String?
+    info          UserData?
+    credential    Credential?
     accounts      Account[]
     sessions      Session[]
+}
+
+model Credential {
+    id       String @id @default(cuid())
+    userId   String @unique
+    password String
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {
@@ -50,4 +60,32 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model UserData {
+    id       String    @id @default(cuid())
+    userId   String    @unique
+    birthday DateTime
+    profiles Profile[]
+
+    user User @relation(fields: [userId], references: [id])
+}
+
+model Profile {
+    id             String                @id @default(cuid())
+    userDataId     String
+    name           String
+    movieWatchlist MovieWatchlistEntry[]
+
+    userData UserData @relation(fields: [userDataId], references: [id])
+}
+
+model MovieWatchlistEntry {
+    movieId   String
+    profileId String
+    watched   Boolean
+
+    profile Profile @relation(fields: [profileId], references: [id])
+
+    @@unique([movieId, profileId])
 }
