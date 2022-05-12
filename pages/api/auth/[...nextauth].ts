@@ -1,3 +1,4 @@
+import bcrypt from "bcrypt";
 import NextAuth from "next-auth";
 import FacebookProvider from "next-auth/providers/facebook";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -20,12 +21,25 @@ export default NextAuth({
     CredentialsProvider({
       name: "credentials",
       credentials: {
-        username: { label: "Email", type: "text" },
+        email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials, req) {
-        console.log(credentials, req);
-        return null;
+      async authorize(credentials) {
+        if (!credentials) return null;
+        const user = await prisma.user.findFirst({
+          where: { email: credentials.email },
+          include: { credential: true },
+        });
+        if (!(user && user.credential)) return null;
+        if (
+          !(await bcrypt.compare(
+            credentials.password,
+            user.credential.password
+          ))
+        )
+          return null;
+        const { credential, ...userData } = user;
+        return userData;
       },
     }),
     FacebookProvider({
@@ -34,10 +48,4 @@ export default NextAuth({
       clientSecret: FACEBOOK_CLIENT_SECRET,
     }),
   ],
-  callbacks: {
-    async signIn(data) {
-      console.log(data);
-      return true;
-    },
-  },
 });
