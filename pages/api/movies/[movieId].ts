@@ -29,7 +29,7 @@ async function getMovieFromTMDB(movieId: string) {
   });
   const title = tmdbResponse.title!;
   const [tmdbPoster] = (tmdbResponse as any).images.posters;
-  const poster = convertTMDBImage(tmdbPoster, configuration);
+  const poster = tmdbPoster && convertTMDBImage(tmdbPoster, configuration);
   const movie: MovieDTO = { id: parseInt(movieId), title, poster };
   return movie;
 }

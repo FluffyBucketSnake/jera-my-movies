@@ -64,14 +64,19 @@ const Movie: FC<MovieProps> = ({ movieId }) => {
               {JSON.stringify(error)}
             </Typography>
           )}
-          {movie && (
-            <Image
-              src={movie.poster.src}
-              layout="fill"
-              objectFit="cover"
-              alt={movie.poster.src}
-            />
-          )}
+          {movie &&
+            (movie.poster ? (
+              <Image
+                src={movie.poster.src}
+                layout="fill"
+                objectFit="cover"
+                alt={movie.poster.src}
+              />
+            ) : (
+              <Typography variant="caption" align="center">
+                This movie does not have poster
+              </Typography>
+            ))}
         </>
       </CardContent>
       <CardContent>

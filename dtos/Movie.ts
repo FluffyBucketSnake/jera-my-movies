@@ -7,5 +7,5 @@ export type MovieImage = {
 export type MovieDTO = {
   id: number;
   title: string;
-  poster: MovieImage;
+  poster?: MovieImage;
 };
