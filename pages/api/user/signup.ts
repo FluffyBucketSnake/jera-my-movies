@@ -37,6 +37,7 @@ async function SignUpRoute(req: NextApiRequest, res: NextApiResponse) {
         return;
       }
       await createUserInfo(user, request);
+      res.status(200).end();
       return;
     }
   } catch (err) {
