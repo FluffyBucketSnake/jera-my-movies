@@ -1,18 +1,18 @@
 # MyMovies
 
-Trabalho para o desafio técnico do processo seletivo realizado pela Jera 
+Trabalho para o desafio técnico do processo seletivo realizado pela Jera
 
 ## TODO
 
 - [x] Desenvolver o login/cadastro de usuário básico
   - [x] Criar middleware para restringir usuários sem autentificação
-- [ ] Desenvolver o login/cadastro de usuário com Facebook
-  - [ ] Redirecionar o usuário para a tela de cadastro para finalizar o registro
+- [x] Desenvolver o login/cadastro de usuário com Facebook
+  - [x] Redirecionar o usuário para a tela de cadastro para finalizar o registro
     - Os campos de valores obtidos do Facebook devem ser desabilitados
 - [ ] Desenvolver a busca de filmes
+  - [ ] Criar a rota para obter os filmes
+    - Recebe uma parâmetro de busca para filtrar por título
   - [ ] Criar a pagina principal
-    - [ ] Criar a rota para obter os filmes
-      - Recebe uma parâmetro de busca para filtrar por título
     - [ ] Criar o layout padrão
     - [ ] Criar o componente de filme
     - [ ] Criar o componente de filtro
