@@ -37,7 +37,8 @@ async function getMovieFromTMDB(movieId: string) {
 async function getImageConfiguration() {
   const tmdbResponse = await movieDB.configuration();
   const baseURL = tmdbResponse.images.secure_base_url!;
-  const [size] = tmdbResponse.images.poster_sizes!;
+  const sizes = tmdbResponse.images.poster_sizes!;
+  const size = sizes.find((size) => size === "original") ?? sizes.at(0)!;
   const configuration: TMDBImageConfiguration = { baseURL, size };
   return configuration;
 }
@@ -47,7 +48,7 @@ function convertTMDBImage(
   configuration: TMDBImageConfiguration
 ): MovieImage {
   const src = new URL(
-    configuration.baseURL + tmdbImage.file_path,
+    configuration.size + tmdbImage.file_path,
     configuration.baseURL
   ).href;
   const width = tmdbImage.width;
