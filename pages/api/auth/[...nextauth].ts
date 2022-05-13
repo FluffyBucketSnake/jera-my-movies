@@ -54,7 +54,6 @@ export default NextAuth({
         (await prisma.userData.count({ where: { userId: user.id } })) > 0;
       session.user.id = user.id;
       session.user.signupComplete = signupComplete;
-      console.log(session);
       return session;
     },
   },
