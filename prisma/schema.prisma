@@ -78,6 +78,8 @@ model Profile {
     movieWatchlist MovieWatchlistEntry[]
 
     userData UserData @relation(fields: [userDataId], references: [id])
+
+    @@unique([userDataId, name])
 }
 
 model MovieWatchlistEntry {
