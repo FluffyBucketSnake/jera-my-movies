@@ -16,7 +16,11 @@ import { signOut } from "next-auth/react";
 import { title } from "process";
 import React, { FC, useState } from "react";
 
-const NavBar: FC = () => {
+export type NavBarProps = {
+  title: string;
+};
+
+const NavBar: FC<NavBarProps> = ({ title }) => {
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
 
   return (

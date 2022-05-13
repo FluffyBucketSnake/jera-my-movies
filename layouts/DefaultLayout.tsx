@@ -12,7 +12,7 @@ const DefaultLayout: FC<DefaultLayoutProps> = ({ children, title }) => {
       <Head>
         <title>{title} - MyMovies</title>
       </Head>
-      <NavBar />
+      <NavBar title={title} />
       <Container maxWidth="md" sx={{ flex: 1 }}>
         {children}
       </Container>
