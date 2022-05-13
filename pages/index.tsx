@@ -1,28 +1,39 @@
 import { CircularProgress } from "@mui/material";
 import { Box } from "@mui/system";
 import Movie from "components/Movie";
+import MovieFilterForm from "components/MovieFilterForm";
 import DefaultLayout from "layouts/DefaultLayout";
 import { withAuthentication } from "middlewares/frontend/withAuthentication";
 import type { NextPage } from "next";
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { GetMoviesResponse } from "./api/movies";
 
 const Homepage: NextPage = () => {
   const [fetchingMovies, setFetchingMovies] = useState<boolean>(false);
   const [movieIds, setMovieIds] = useState<number[]>();
+  const [query, setQuery] = useState<string>("");
 
-  useEffect(() => {
+  const refetchMovies = (query: string) => {
     setFetchingMovies(true);
-    fetch("/api/movies")
+    const baseURL = "/api/movies";
+    fetch(query ? `${baseURL}?q=${query}` : baseURL)
       .then((response) => response.json())
       .then(({ movieIds }: GetMoviesResponse) => setMovieIds(movieIds))
       .catch(() => {})
       .finally(() => setFetchingMovies(false));
-  }, []);
+  };
+
+  const updateFilter = (e: FormEvent<HTMLFormElement>, query: string) => {
+    e.preventDefault();
+    setQuery(query);
+  };
+
+  useEffect(() => refetchMovies(query), [query]);
 
   return (
     <DefaultLayout title="Home">
-      <Box position="relative" p={4} width={1}>
+      <MovieFilterForm onSubmit={updateFilter} />
+      <Box position="relative" width={1}>
         {fetchingMovies && (
           <CircularProgress
             sx={{
