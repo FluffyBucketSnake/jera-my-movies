@@ -14,6 +14,7 @@ Trabalho para o desafio técnico do processo seletivo realizado pela Jera
     - Recebe uma parâmetro de busca para filtrar por título
   - [ ] Criar a pagina principal
     - [ ] Criar o layout padrão
+      - [ ] Desfecho com a logo do TMDB
     - [ ] Criar o componente de filme
     - [ ] Criar o componente de filtro
     - [ ] Finalizar a montagem da página
@@ -33,6 +34,7 @@ Trabalho para o desafio técnico do processo seletivo realizado pela Jera
 - [ ] Limpar o código da aplicação
 - [ ] Desenvolver o compartilhamento de filmes
 - [ ] Desenvolver o agendamento de filmes
+- [ ] Filtro de filmes adultos
 
 ## Executando
 
@@ -43,11 +45,13 @@ Trabalho para o desafio técnico do processo seletivo realizado pela Jera
 3. Certifique-se que está com PostgreSQL instalado
 4. Crie um aplicativo Facebook
    - Anote o identificador e a chave secreta do aplicativo
-5. Crie um arquivo `.env` e defina as seguintes variáveis de ambiente:
+5. Crie uma chave de *API* do *TMDB(The Movie Database)*
+6. Crie um arquivo `.env` e defina as seguintes variáveis de ambiente:
    - `FACEBOOK_CLIENT_ID`: ID do aplicativo Facebook
    - `FACEBOOK_CLIENT_SECRET`: Chave secreta do aplicativo Facebook
    - `DATABASE_URL`: a URL de conexão com um banco de dados PostgreSQL
    - `NEXTAUTH_URL`: a URL por onde este serviço será hospedado. Ex.: "http://localhost:3000"
    - `NEXTAUTH_SECRET`: uma *string* aleatória usada no sistema de autentificação
      - Recomenda-se criar uma com o comando: `openssl rand -base64 32`
-6. Execute a aplicação com o comando: `npm run dev`
+   - `TMDB_API_KEY`: a chave de *API* para o *TMDB*
+7. Execute a aplicação com o comando: `npm run dev`
