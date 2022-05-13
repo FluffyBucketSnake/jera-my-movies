@@ -1,5 +1,6 @@
 import { User, UserData } from "@prisma/client";
 import { prisma } from "config/db";
+import { convertProfileModelToDTO, ProfileDTO } from "dtos/Profile";
 import { withAuthentication } from "middlewares/backend/withAuthentication";
 import { NextApiRequest, NextApiResponse } from "next";
 import { z, ZodError } from "zod";
@@ -12,6 +13,10 @@ export const zodCreateProfileRequest = z.object({
 });
 
 export type CreateProfileRequest = z.infer<typeof zodCreateProfileRequest>;
+
+export type GetProfilesResponse = {
+  profiles: ProfileDTO[];
+};
 
 async function CreateProfileHandler(
   req: NextApiRequest,
@@ -41,6 +46,19 @@ async function CreateProfileHandler(
   res.status(201).end();
 }
 
+async function GetProfilesHandler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: User & { info: UserData }
+) {
+  const profiles = await prisma.profile.findMany({
+    where: { userDataId: user.info.id },
+    include: { movieWatchlist: true },
+  });
+  const dtos = profiles.map(convertProfileModelToDTO);
+  res.json({ profiles: dtos });
+}
+
 async function ProfileRoute(
   req: NextApiRequest,
   res: NextApiResponse,
@@ -50,6 +68,9 @@ async function ProfileRoute(
     switch (req.method) {
       case "POST":
         await CreateProfileHandler(req, res, user);
+        return;
+      case "GET":
+        await GetProfilesHandler(req, res, user);
         return;
       default:
         res.status(405).json({
