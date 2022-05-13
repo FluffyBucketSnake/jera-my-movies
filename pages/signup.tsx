@@ -1,10 +1,20 @@
 import { Button, Paper, TextField } from "@mui/material";
 import axios from "axios";
 import { LoginLayout } from "layouts/LoginLayout";
+import { GetServerSideProps, NextPage } from "next";
+import { getSession } from "next-auth/react";
 import { useRef } from "react";
 import { FormEvent, useState } from "react";
 
-const SignUpPage = () => {
+export type SignUpPageProps = {
+  hydratedFields: HydratedFields;
+};
+
+export type HydratedFields = {
+  email: string | null;
+};
+
+const SignUpPage: NextPage<SignUpPageProps> = ({ hydratedFields }) => {
   const [signingUp, setSigningUp] = useState<boolean>(false);
 
   const formRef = useRef<HTMLFormElement | null>(null);
@@ -15,7 +25,7 @@ const SignUpPage = () => {
     setSigningUp(true);
     const formData = new FormData(formRef.current!);
     const data = {
-      email: formData.get("email"),
+      email: formData.get("email") ?? hydratedFields.email,
       password: formData.get("password"),
       birthday: formData.get("birthday"),
     };
@@ -41,7 +51,14 @@ const SignUpPage = () => {
         ref={formRef}
         onSubmit={signUp}
       >
-        <TextField name="email" type="email" label="Email" margin="dense" />
+        <TextField
+          name="email"
+          type="email"
+          label={!hydratedFields.email ? "Email" : undefined}
+          margin="dense"
+          value={hydratedFields.email ?? undefined}
+          disabled={!!hydratedFields.email}
+        />
         <TextField
           name="password"
           type="password"
@@ -65,6 +82,19 @@ const SignUpPage = () => {
       </Paper>
     </LoginLayout>
   );
+};
+
+export const getServerSideProps: GetServerSideProps<SignUpPageProps> = async (
+  context
+) => {
+  const session = await getSession(context);
+  if (session) {
+    if (session.user.signupComplete) {
+      return { redirect: { permanent: false, destination: "/" } };
+    }
+    return { props: { hydratedFields: { email: session.user.email } } };
+  }
+  return { props: { hydratedFields: { email: null } } };
 };
 
 export default SignUpPage;
