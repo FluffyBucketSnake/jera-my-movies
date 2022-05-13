@@ -17,6 +17,14 @@ export function withAuthentication<
         },
       };
     }
+    if (!session.user.signupComplete) {
+      return {
+        redirect: {
+          permanent: false,
+          destination: "/signup",
+        },
+      };
+    }
     return gssp(context);
   };
 }
