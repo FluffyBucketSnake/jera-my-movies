@@ -9,15 +9,15 @@ Trabalho para o desafio técnico do processo seletivo realizado pela Jera
 - [x] Desenvolver o login/cadastro de usuário com Facebook
   - [x] Redirecionar o usuário para a tela de cadastro para finalizar o registro
     - Os campos de valores obtidos do Facebook devem ser desabilitados
-- [ ] Desenvolver a busca de filmes
-  - [ ] Criar a rota para obter os filmes
+- [x] Desenvolver a busca de filmes
+  - [x] Criar a rota para obter os filmes
     - Recebe uma parâmetro de busca para filtrar por título
-  - [ ] Criar a pagina principal
-    - [ ] Criar o layout padrão
-      - [ ] Desfecho com a logo do TMDB
-    - [ ] Criar o componente de filme
-    - [ ] Criar o componente de filtro
-    - [ ] Finalizar a montagem da página
+  - [x] Criar a pagina principal
+    - [x] Criar o layout padrão
+      - [x] Desfecho com a logo do TMDB
+    - [x] Criar o componente de filme
+    - [x] Criar o componente de filtro
+    - [x] Finalizar a montagem da página
 - [ ] Desenvolver o gerenciamento de perfis
   - [ ] Criar uma rota para criar perfis
   - [ ] Criar uma rota para buscar perfis
