@@ -28,7 +28,8 @@ const CreateProfilePage: NextPage<Props> = ({ forbidden }) => {
       router.push("/");
     } catch (err) {
       if (axios.isAxiosError(err) && err.response) {
-        alert(err.response.data.error.message);
+        // TODO: use an actual type
+        alert((err.response.data as any).error.message);
         setCreatingProfile(false);
         return;
       }
