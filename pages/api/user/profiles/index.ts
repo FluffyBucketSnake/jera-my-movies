@@ -53,6 +53,7 @@ async function GetProfilesHandler(
 ) {
   const profiles = await prisma.profile.findMany({
     where: { userDataId: user.info.id },
+    include: { movieWatchlist: true },
   });
   const dtos = profiles.map(convertProfileModelToDTO);
   res.json({ profiles: dtos });
