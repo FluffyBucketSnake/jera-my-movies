@@ -3,6 +3,7 @@ import { prisma } from "config/db";
 import { convertProfileModelToDTO, ProfileDTO } from "dtos/Profile";
 import { withAuthentication } from "middlewares/backend/withAuthentication";
 import { NextApiRequest, NextApiResponse } from "next";
+import firstOrSelf from "utils/firstOrSelf";
 
 export type GetProfileResponse = {
   profile: ProfileDTO;
@@ -13,9 +14,6 @@ async function GetProfileRoute(
   res: NextApiResponse,
   user: User & { info: UserData }
 ) {
-  const profileId = Array.isArray(req.query.profileId)
-    ? req.query.profileId[0]
-    : req.query.profileId;
   const profile = await prisma.profile.findFirst({
     where: { id: profileId, userDataId: user.info.id },
     include: { movieWatchlist: true },
