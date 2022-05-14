@@ -1,3 +1,4 @@
+import { ProfileDTO } from "dtos/Profile";
 import "next-auth";
 
 declare module "next-auth" {
@@ -7,6 +8,8 @@ declare module "next-auth" {
       name?: string;
       email: string;
       signupComplete: boolean;
+      canCreateNewProfile?: boolean;
+      profiles?: ProfileDTO[];
     };
   }
 }

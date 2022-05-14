@@ -4,6 +4,7 @@ import FacebookProvider from "next-auth/providers/facebook";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "config/db";
+import { convertProfileModelToDTO } from "dtos/Profile";
 
 const FACEBOOK_CLIENT_ID = process.env.FACEBOOK_CLIENT_ID;
 const FACEBOOK_CLIENT_SECRET = process.env.FACEBOOK_CLIENT_SECRET;
@@ -50,10 +51,19 @@ export default NextAuth({
   ],
   callbacks: {
     async session({ session, user }) {
-      const signupComplete =
-        (await prisma.userData.count({ where: { userId: user.id } })) > 0;
+      const userData = await prisma.userData.findUnique({
+        where: { userId: user.id },
+        include: { profiles: { include: { movieWatchlist: true } } },
+      });
+      const profileCount = await prisma.profile.count;
+      const signupComplete = !!userData;
       session.user.id = user.id;
       session.user.signupComplete = signupComplete;
+      session.user.canCreateNewProfile =
+        !!userData && userData?.profiles.length < 4;
+      session.user.profiles =
+        (userData && userData.profiles.map(convertProfileModelToDTO)) ??
+        undefined;
       return session;
     },
   },
