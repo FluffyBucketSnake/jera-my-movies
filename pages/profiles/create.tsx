@@ -1,6 +1,5 @@
-import { Box, Button, Container, TextField, Typography } from "@mui/material";
+import { Box, Button, TextField, Typography } from "@mui/material";
 import axios from "axios";
-import { prisma } from "config/db";
 import DefaultLayout from "layouts/DefaultLayout";
 import { withAuthentication } from "middlewares/frontend/withAuthentication";
 import { NextPage } from "next";
