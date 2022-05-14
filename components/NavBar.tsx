@@ -15,6 +15,7 @@ import {
 import { signOut } from "next-auth/react";
 import { title } from "process";
 import React, { FC, useState } from "react";
+import UserProfileList from "./UserProfileList";
 
 export type NavBarProps = {
   title: string;
@@ -40,11 +41,12 @@ const NavBar: FC<NavBarProps> = ({ title }) => {
           <Typography variant="h6" component="h1">
             MyMovies - {title}
           </Typography>
+          <UserProfileList sx={{ ml: "auto" }} />
           <Button
             color="inherit"
             size="large"
-            sx={{ ml: "auto" }}
             onClick={() => signOut()}
+            sx={{ ml: 2 }}
           >
             Logout
           </Button>
