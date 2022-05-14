@@ -14,6 +14,7 @@ async function GetProfileRoute(
   res: NextApiResponse,
   user: User & { info: UserData }
 ) {
+  const profileId = firstOrSelf(req.query.profileId)!;
   const profile = await prisma.profile.findFirst({
     where: { id: profileId, userDataId: user.info.id },
     include: { movieWatchlist: true },
