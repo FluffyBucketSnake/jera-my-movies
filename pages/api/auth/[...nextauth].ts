@@ -60,7 +60,7 @@ export default NextAuth({
       session.user.id = user.id;
       session.user.signupComplete = signupComplete;
       session.user.canCreateNewProfile =
-        !!userData && userData?.profiles.length < 4;
+        !!userData && userData.profiles.length < 4;
       session.user.profiles =
         (userData && userData.profiles.map(convertProfileModelToDTO)) ??
         undefined;
