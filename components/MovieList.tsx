@@ -15,6 +15,7 @@ const MovieList: FC<MovieListProps> = ({ loading, movieIds }) => {
           sx={{
             position: "absolute",
             left: "50%",
+            zIndex: 20,
             mt: 4,
             transform: "translate(-50%)",
           }}
