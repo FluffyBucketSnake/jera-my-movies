@@ -22,7 +22,7 @@ export function useSuggestedMovies(): SuggestedMoviesQuery {
   );
   const loading =
     sessionStatus !== "authenticated" || loadingProfiles || isLoading;
-  if (loading) return { loading: false };
-  if (profiles!.length === 0) return { loading: true, movies: undefined };
-  return { loading: true, movies };
+  if (loading) return { loading: true };
+  if (profiles!.length === 0) return { loading: false, movies: undefined };
+  return { loading: false, movies };
 }

@@ -22,7 +22,7 @@ export function useWatchlist(): WatchlistQuery {
   );
   const loading =
     sessionStatus !== "authenticated" || loadingProfiles || isLoading;
-  if (loading) return { loading: false };
-  if (profiles!.length === 0) return { loading: true, watchlist: undefined };
-  return { loading: true, watchlist };
+  if (loading) return { loading: true };
+  if (profiles!.length === 0) return { loading: false, watchlist: undefined };
+  return { loading: false, watchlist };
 }
