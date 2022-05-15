@@ -41,7 +41,7 @@ const LoginForm: FC = () => {
           fullWidth
         />
         <Button type="submit" variant="contained" sx={{ mt: 2 }} fullWidth>
-          Sign Up
+          Login
         </Button>
       </Paper>
       <Typography
