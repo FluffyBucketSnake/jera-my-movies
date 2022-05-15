@@ -9,7 +9,7 @@ import { FC } from "react";
 
 const SuggestedMoviesPage: NextPage = () => {
   return (
-    <DefaultLayout title="Watchlist">
+    <DefaultLayout title="Suggested movies">
       <SuggestedMovieList />
     </DefaultLayout>
   );
@@ -25,6 +25,20 @@ const SuggestedMovieList: FC = () => {
     return (
       <Typography component="span" variant="h6">
         You have no profiles. Create one first to look at your suggested movies
+      </Typography>
+    );
+  }
+
+  if (movies && movies.length === 0) {
+    return (
+      <Typography
+        component="span"
+        variant="body1"
+        color="textSecondary"
+        sx={{ mx: "auto" }}
+      >
+        Your list is empty. Add some movies to your watchlist and
+        recommendations will appear here
       </Typography>
     );
   }
