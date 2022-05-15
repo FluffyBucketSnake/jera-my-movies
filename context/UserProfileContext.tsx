@@ -1,7 +1,9 @@
+import axios from "axios";
 import { ProfileDTO } from "dtos/Profile";
 import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import { AddMovieToWatchlistRequest } from "pages/api/user/profiles/[profileId]/watchlist";
 import {
   createContext,
   FC,
@@ -10,6 +12,7 @@ import {
   useEffect,
   useState,
 } from "react";
+import { WatchlistMovieStatus } from "types/WatchlistMovieStatus";
 
 const LOCAL_STORAGE_CURRENT_PROFILE_KEY = "mymovies:current_profile";
 
@@ -18,6 +21,8 @@ type LoadingUserProfileContextData = {
   user?: undefined;
   currentProfile?: undefined;
   changeCurrentProfile?: undefined;
+  getWatchlistMovieStatus?: undefined;
+  addMovieToWatchlist?: undefined;
 };
 
 type LoadedUserProfileContextData = {
@@ -25,6 +30,8 @@ type LoadedUserProfileContextData = {
   user: Session["user"];
   currentProfile: ProfileDTO;
   changeCurrentProfile: (id: string) => void;
+  getWatchlistMovieStatus: (movieId: number) => Promise<WatchlistMovieStatus>;
+  addMovieToWatchlist: (movieId: number) => Promise<void>;
 };
 
 export type UserProfileContextData =
@@ -77,9 +84,31 @@ export const UserProfileProvider: FC<UserProfileProviderProps> = ({
     );
   }
 
+  const getWatchlistMovieStatus = async (movieId: number) => {
+    const entry = currentProfile.movieWatchlist.find(
+      (entry) => entry.movieId === movieId
+    );
+    if (!entry) return "notadded";
+    return entry.watched ? "watched" : "unwatched";
+  };
+
+  const addMovieToWatchlist = async (movieId: number) => {
+    await axios.post<any, any, AddMovieToWatchlistRequest>(
+      `/api/user/profiles/${currentProfileId}/watchlist`,
+      { movieId }
+    );
+  };
+
   return (
     <UserProfileContext.Provider
-      value={{ loading: false, user, currentProfile, changeCurrentProfile }}
+      value={{
+        loading: false,
+        user,
+        currentProfile,
+        changeCurrentProfile,
+        getWatchlistMovieStatus,
+        addMovieToWatchlist,
+      }}
     >
       {children}
     </UserProfileContext.Provider>

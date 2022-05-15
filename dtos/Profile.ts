@@ -1,9 +1,10 @@
 import { MovieWatchlistEntry, Profile } from "@prisma/client";
+import { MovieWatchlistEntryDTO } from "./MovieWatchlistEntry";
 
 export type ProfileDTO = {
   id: string;
   name: string;
-  movieWatchlist: number[];
+  movieWatchlist: MovieWatchlistEntryDTO[];
 };
 
 export function convertProfileModelToDTO(
@@ -12,8 +13,9 @@ export function convertProfileModelToDTO(
   return {
     id: model.id,
     name: model.name,
-    movieWatchlist: model.movieWatchlist.map(({ movieId }) =>
-      parseInt(movieId)
-    ),
+    movieWatchlist: model.movieWatchlist.map(({ movieId, watched }) => ({
+      movieId: parseInt(movieId),
+      watched,
+    })),
   };
 }

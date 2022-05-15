@@ -1,17 +1,24 @@
-import "../styles/globals.css";
-import type { AppProps } from "next/app";
 import { CssBaseline } from "@mui/material";
-import { SessionProvider } from "next-auth/react";
 import { UserProfileProvider } from "context/UserProfileContext";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { ReactQueryDevtools } from "react-query/devtools";
+import type { AppProps } from "next/app";
+import { SessionProvider } from "next-auth/react";
+import "../styles/globals.css";
+
+const queryClient = new QueryClient();
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <SessionProvider>
-      <UserProfileProvider>
-        <CssBaseline />
-        <Component {...pageProps} />
-      </UserProfileProvider>
-    </SessionProvider>
+    <QueryClientProvider client={queryClient}>
+      <SessionProvider>
+        <UserProfileProvider>
+          <CssBaseline />
+          <Component {...pageProps} />
+        </UserProfileProvider>
+      </SessionProvider>
+      <ReactQueryDevtools />
+    </QueryClientProvider>
   );
 }
 
