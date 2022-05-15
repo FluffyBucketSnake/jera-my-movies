@@ -1,8 +1,13 @@
-import { MovieWatchlistEntry, Profile, User, UserData } from "@prisma/client";
+import { Profile, User, UserData } from "@prisma/client";
 import movieDB from "apis/tmdb";
 import { prisma } from "config/db";
+import {
+  convertMovieWatchlistEntryModelToDTO,
+  MovieWatchlistEntryDTO,
+} from "dtos/MovieWatchlistEntry";
+import { convertProfileModelToDTO } from "dtos/Profile";
 import { withAuthentication } from "middlewares/backend/withAuthentication";
-import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
+import { NextApiRequest, NextApiResponse } from "next";
 import firstOrSelf from "utils/firstOrSelf";
 import { z, ZodError } from "zod";
 
@@ -11,6 +16,10 @@ export const zodAddMovieToWatchlistRequest = z.object({ movieId: z.number() });
 export type AddMovieToWatchlistRequest = z.infer<
   typeof zodAddMovieToWatchlistRequest
 >;
+
+export type GetWatchlistResponse = {
+  entries: MovieWatchlistEntryDTO[];
+};
 
 async function AddMovieToWatchlistHandler(
   req: NextApiRequest,
@@ -43,6 +52,19 @@ async function AddMovieToWatchlistHandler(
   return res.status(201).end();
 }
 
+async function GetWatchlistHandler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  profile: Profile
+) {
+  const entries = await prisma.movieWatchlistEntry.findMany({
+    where: { profileId: profile.id },
+  });
+  const dtos = entries.map(convertMovieWatchlistEntryModelToDTO);
+  const resBody: GetWatchlistResponse = { entries: dtos };
+  return res.json(resBody);
+}
+
 async function ProfileWatchlistRoute(
   req: NextApiRequest,
   res: NextApiResponse,
@@ -69,6 +91,9 @@ async function ProfileWatchlistRoute(
     switch (req.method) {
       case "POST":
         await AddMovieToWatchlistHandler(req, res, profile);
+        return;
+      case "GET":
+        await GetWatchlistHandler(req, res, profile);
         return;
       default:
         return res.status(405).json({

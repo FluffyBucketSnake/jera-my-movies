@@ -1,10 +1,9 @@
 import axios from "axios";
 import { ProfileDTO } from "dtos/Profile";
-import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { GetProfilesResponse } from "pages/api/user/profiles";
-import { GetProfileResponse } from "pages/api/user/profiles/[profileId]";
+import { GetWatchlistResponse } from "pages/api/user/profiles/[profileId]/watchlist";
 import { AddMovieToWatchlistRequest } from "pages/api/user/profiles/[profileId]/watchlist";
 import {
   createContext,
@@ -110,10 +109,10 @@ export const UserProfileProvider: FC<UserProfileProviderProps> = ({
     profiles.find(({ id }) => id === currentProfileId) ?? profiles[0];
 
   const getWatchlistMovieStatus = async (movieId: number) => {
-    const response = await axios.get<GetProfileResponse>(
-      `/api/user/profiles/${currentProfile.id}`
+    const response = await axios.get<GetWatchlistResponse>(
+      `/api/user/profiles/${currentProfile.id}/entries`
     );
-    const watchlist = response.data.profile.movieWatchlist;
+    const watchlist = response.data.entries;
     const entry = watchlist.find((entry) => entry.movieId === movieId);
     if (!entry) return "notadded";
     return entry.watched ? "watched" : "unwatched";
