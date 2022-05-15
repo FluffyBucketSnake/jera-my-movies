@@ -43,6 +43,7 @@ export function useWatchlistStatus(movieId: number): WatchlistStatusQuery {
   const addToWatchlistMutation = useMutation(
     async (movieId: number) => {
       if (profileLoading) return;
+      console.log(currentProfile);
       return addMovieToWatchlist(movieId);
     },
     {
