@@ -11,6 +11,7 @@ import {
 import { MovieDTO } from "dtos/Movie";
 import { useWatchlistStatus } from "hooks/useWatchlistStatus";
 import Image from "next/image";
+import NextLink from "next/link";
 import { GetMovieResponse } from "pages/api/movies/[movieId]";
 import React, { FC, useEffect, useState } from "react";
 
@@ -21,8 +22,8 @@ export type MovieProps = {
 const Movie: FC<MovieProps> = ({ movieId }) => {
   const [fetchingMovie, setFetchingMovie] = useState<boolean>(false);
   const {
-    loading: loadingWatchlistStatus,
-    watchlistStatus,
+    status: watchlistStatus,
+    movieStatus: watchlistMovieStatus,
     addToWatchlist,
   } = useWatchlistStatus(movieId);
   const [movie, setMovie] = useState<MovieDTO>();
@@ -91,18 +92,27 @@ const Movie: FC<MovieProps> = ({ movieId }) => {
                   maxHeight: "2.5rem",
                 }}
               >
-                {loadingWatchlistStatus ? (
+                {watchlistStatus === "loading" && (
                   <CircularProgress color="inherit" size="1rem" />
-                ) : watchlistStatus !== "notadded" ? (
-                  <AddedToWatchlistIcon />
-                ) : (
-                  <IconButton
-                    aria-label="Share"
-                    onClick={() => addToWatchlist()}
-                  >
-                    <AddToWatchlistIcon />
-                  </IconButton>
                 )}
+                {watchlistStatus === "noprofile" && (
+                  <NextLink href="/profiles/create" passHref>
+                    <IconButton aria-label="Add to watchlist">
+                      <AddToWatchlistIcon />
+                    </IconButton>
+                  </NextLink>
+                )}
+                {watchlistStatus === "loaded" &&
+                  (watchlistMovieStatus !== "notadded" ? (
+                    <AddedToWatchlistIcon />
+                  ) : (
+                    <IconButton
+                      aria-label="Add to watchlist"
+                      onClick={() => addToWatchlist()}
+                    >
+                      <AddToWatchlistIcon />
+                    </IconButton>
+                  ))}
               </Box>
               {movie.poster ? (
                 <Image

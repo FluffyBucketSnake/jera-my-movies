@@ -3,19 +3,26 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import { WatchlistMovieStatus } from "types/WatchlistMovieStatus";
 
 type LoadingWatchlistStatusQuery = {
-  loading: true;
-  watchlistStatus?: undefined;
+  status: "loading";
+  movieStatus?: undefined;
+  addToWatchlist?: undefined;
+};
+
+type NoProfileWatchlistStatusQuery = {
+  status: "noprofile";
+  movieStatus?: undefined;
   addToWatchlist?: undefined;
 };
 
 type LoadedWatchlistStatusQuery = {
-  loading: false;
-  watchlistStatus: WatchlistMovieStatus;
+  status: "loaded";
+  movieStatus: WatchlistMovieStatus;
   addToWatchlist: () => Promise<void>;
 };
 
 export type WatchlistStatusQuery =
   | LoadingWatchlistStatusQuery
+  | NoProfileWatchlistStatusQuery
   | LoadedWatchlistStatusQuery;
 
 export function useWatchlistStatus(movieId: number): WatchlistStatusQuery {
@@ -31,7 +38,7 @@ export function useWatchlistStatus(movieId: number): WatchlistStatusQuery {
   const { isSuccess: loadedData, data } = useQuery(
     queryKey,
     () => getWatchlistMovieStatus!(movieId),
-    { enabled: !profileLoading }
+    { enabled: !!currentProfile }
   );
   const addToWatchlistMutation = useMutation(
     async (movieId: number) => {
@@ -39,7 +46,7 @@ export function useWatchlistStatus(movieId: number): WatchlistStatusQuery {
       return addMovieToWatchlist(movieId);
     },
     {
-      onError: (err) =>
+      onError: () =>
         alert(
           "For some reason, we couldn't update your watchlist. Try again later."
         ),
@@ -50,8 +57,10 @@ export function useWatchlistStatus(movieId: number): WatchlistStatusQuery {
   );
   const addToWatchlist = () => addToWatchlistMutation.mutateAsync(movieId);
 
-  if (profileLoading || !loadedData || addToWatchlistMutation.isLoading) {
-    return { loading: true };
+  if (profileLoading) return { status: "loading" };
+  if (!currentProfile) return { status: "noprofile" };
+  if (!loadedData || addToWatchlistMutation.isLoading) {
+    return { status: "loading" };
   }
-  return { loading: false, watchlistStatus: data, addToWatchlist };
+  return { status: "loaded", movieStatus: data, addToWatchlist };
 }
