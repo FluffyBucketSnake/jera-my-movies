@@ -3,6 +3,7 @@ import { ProfileDTO } from "dtos/Profile";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { GetProfilesResponse } from "pages/api/user/profiles";
+import { GetSuggestedMoviesResponse } from "pages/api/user/profiles/[profileId]/suggested";
 import { GetWatchlistResponse } from "pages/api/user/profiles/[profileId]/watchlist";
 import { AddMovieToWatchlistRequest } from "pages/api/user/profiles/[profileId]/watchlist";
 import { UpdateWatchlistMovieRequest } from "pages/api/user/profiles/[profileId]/watchlist/[movieId]";
@@ -27,6 +28,7 @@ type LoadingUserProfileContextData = {
   canUserCreateNewProfile?: undefined;
   changeCurrentProfile?: undefined;
   getWatchlistMovies?: undefined;
+  getSuggestedMovies?: undefined;
   getWatchlistMovieStatus?: undefined;
   addMovieToWatchlist?: undefined;
   markMovieAsWatched?: undefined;
@@ -40,6 +42,7 @@ type LoadedUserProfileContextData = {
   canUserCreateNewProfile: boolean;
   changeCurrentProfile: (id: string) => void;
   getWatchlistMovies: () => Promise<number[]>;
+  getSuggestedMovies: () => Promise<number[]>;
   getWatchlistMovieStatus: (movieId: number) => Promise<WatchlistMovieStatus>;
   addMovieToWatchlist: (movieId: number) => Promise<void>;
   markMovieAsWatched: (movieId: number) => Promise<void>;
@@ -130,6 +133,13 @@ export const UserProfileProvider: FC<UserProfileProviderProps> = ({
     return response.data.entries.map(({ movieId }) => movieId);
   };
 
+  const getSuggestedMovies = async () => {
+    const response = await axios.get<GetSuggestedMoviesResponse>(
+      `/api/user/profiles/${currentProfile.id}/suggested`
+    );
+    return response.data.movies;
+  };
+
   const addMovieToWatchlist = async (movieId: number) => {
     await axios.post<any, any, AddMovieToWatchlistRequest>(
       `/api/user/profiles/${currentProfileId}/watchlist`,
@@ -152,6 +162,7 @@ export const UserProfileProvider: FC<UserProfileProviderProps> = ({
         currentProfile,
         changeCurrentProfile,
         getWatchlistMovies,
+        getSuggestedMovies,
         getWatchlistMovieStatus,
         addMovieToWatchlist,
         markMovieAsWatched,
