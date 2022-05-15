@@ -1,13 +1,15 @@
+import AddToWatchlistIcon from "@mui/icons-material/AddBoxOutlined";
+import AddedToWatchlistIcon from "@mui/icons-material/Check";
 import {
+  Box,
   Card,
   CardContent,
-  CardHeader,
   CircularProgress,
-  Paper,
+  IconButton,
   Typography,
 } from "@mui/material";
-import { Box } from "@mui/system";
 import { MovieDTO } from "dtos/Movie";
+import { useWatchlistStatus } from "hooks/useWatchlistStatus";
 import Image from "next/image";
 import { GetMovieResponse } from "pages/api/movies/[movieId]";
 import React, { FC, useEffect, useState } from "react";
@@ -17,7 +19,12 @@ export type MovieProps = {
 };
 
 const Movie: FC<MovieProps> = ({ movieId }) => {
-  const [fetchingMovie, setFetchingMovie] = useState<boolean>();
+  const [fetchingMovie, setFetchingMovie] = useState<boolean>(false);
+  const {
+    loading: loadingWatchlistStatus,
+    watchlistStatus,
+    addToWatchlist,
+  } = useWatchlistStatus(movieId);
   const [movie, setMovie] = useState<MovieDTO>();
   const [error, setError] = useState<unknown>();
 
@@ -64,19 +71,53 @@ const Movie: FC<MovieProps> = ({ movieId }) => {
               {JSON.stringify(error)}
             </Typography>
           )}
-          {movie &&
-            (movie.poster ? (
-              <Image
-                src={movie.poster.src}
-                layout="fill"
-                objectFit="cover"
-                alt={movie.poster.src}
-              />
-            ) : (
-              <Typography variant="caption" align="center">
-                This movie does not have poster
-              </Typography>
-            ))}
+          {movie && (
+            <>
+              <Box
+                sx={{
+                  position: "absolute",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  backgroundColor: "#F8F8F8",
+                  right: (theme) => theme.spacing(1),
+                  top: (theme) => theme.spacing(1),
+                  zIndex: 10,
+                  borderRadius: "100%",
+                  p: 1,
+                  width: 1,
+                  height: 1,
+                  maxWidth: "2.5rem",
+                  maxHeight: "2.5rem",
+                }}
+              >
+                {loadingWatchlistStatus ? (
+                  <CircularProgress color="inherit" size="1rem" />
+                ) : watchlistStatus !== "notadded" ? (
+                  <AddedToWatchlistIcon />
+                ) : (
+                  <IconButton
+                    aria-label="Share"
+                    onClick={() => addToWatchlist()}
+                  >
+                    <AddToWatchlistIcon />
+                  </IconButton>
+                )}
+              </Box>
+              {movie.poster ? (
+                <Image
+                  src={movie.poster.src}
+                  layout="fill"
+                  objectFit="cover"
+                  alt={movie.poster.src}
+                />
+              ) : (
+                <Typography variant="caption" align="center">
+                  This movie does not have poster
+                </Typography>
+              )}
+            </>
+          )}
         </>
       </CardContent>
       <CardContent>
