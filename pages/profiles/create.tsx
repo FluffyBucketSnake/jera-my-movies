@@ -1,5 +1,6 @@
 import { Box, Button, TextField, Typography } from "@mui/material";
 import axios from "axios";
+import { useUserProfile } from "context/UserProfileContext";
 import DefaultLayout from "layouts/DefaultLayout";
 import { withAuthentication } from "middlewares/frontend/withAuthentication";
 import { NextPage } from "next";
@@ -7,6 +8,7 @@ import { getSession } from "next-auth/react";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
 import { FormEvent, useState } from "react";
+import { useMutation } from "react-query";
 
 export type Props = {
   forbidden: boolean;
@@ -15,26 +17,33 @@ export type Props = {
 const CreateProfilePage: NextPage<Props> = ({ forbidden }) => {
   const router = useRouter();
 
-  const [creatingProfile, setCreatingProfile] = useState<boolean>(false);
+  const { loading, invalidateProfiles } = useUserProfile();
+
   const [profileName, setProfileName] = useState<string>("");
+
+  const createProfileMutation = useMutation(
+    (name: string) => axios.post("/api/user/profiles", { name }),
+    {
+      onSuccess: () => {
+        invalidateProfiles();
+        router.push("/");
+      },
+      onError: (err) => {
+        if (axios.isAxiosError(err) && err.response) {
+          alert((err.response.data as any).error.message);
+          return;
+        }
+        alert(err);
+      },
+    }
+  );
 
   const createProfile = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setCreatingProfile(true);
-    const data = { name: profileName };
-    try {
-      await axios.post("/api/user/profiles", data);
-      router.push("/");
-    } catch (err) {
-      if (axios.isAxiosError(err) && err.response) {
-        // TODO: use an actual type
-        alert((err.response.data as any).error.message);
-        setCreatingProfile(false);
-        return;
-      }
-      throw err;
-    }
+    createProfileMutation.mutate(profileName);
   };
+
+  const creatingProfile = createProfileMutation.isLoading;
 
   return (
     <DefaultLayout title="Create a new profile">

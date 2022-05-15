@@ -3,6 +3,7 @@ import { ProfileDTO } from "dtos/Profile";
 import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import { GetProfilesResponse } from "pages/api/user/profiles";
 import { AddMovieToWatchlistRequest } from "pages/api/user/profiles/[profileId]/watchlist";
 import {
   createContext,
@@ -12,6 +13,7 @@ import {
   useEffect,
   useState,
 } from "react";
+import { useQuery, useQueryClient } from "react-query";
 import { WatchlistMovieStatus } from "types/WatchlistMovieStatus";
 
 const LOCAL_STORAGE_CURRENT_PROFILE_KEY = "mymovies:current_profile";
@@ -19,19 +21,24 @@ const LOCAL_STORAGE_CURRENT_PROFILE_KEY = "mymovies:current_profile";
 type LoadingUserProfileContextData = {
   loading: true;
   user?: undefined;
+  profiles?: undefined;
   currentProfile?: undefined;
+  canUserCreateNewProfile?: undefined;
   changeCurrentProfile?: undefined;
   getWatchlistMovieStatus?: undefined;
   addMovieToWatchlist?: undefined;
+  invalidateProfiles: () => void;
 };
 
 type LoadedUserProfileContextData = {
   loading: false;
-  user: Session["user"];
+  profiles: ProfileDTO[];
   currentProfile: ProfileDTO;
+  canUserCreateNewProfile: boolean;
   changeCurrentProfile: (id: string) => void;
   getWatchlistMovieStatus: (movieId: number) => Promise<WatchlistMovieStatus>;
   addMovieToWatchlist: (movieId: number) => Promise<void>;
+  invalidateProfiles: () => void;
 };
 
 export type UserProfileContextData =
@@ -45,44 +52,61 @@ export type UserProfileProviderProps = PropsWithChildren<{}>;
 export const UserProfileProvider: FC<UserProfileProviderProps> = ({
   children,
 }) => {
+  const queryClient = useQueryClient();
   const router = useRouter();
-  const { status, data } = useSession({
+
+  const { status: userStatus, data: session } = useSession({
     required: true,
     onUnauthenticated: () => router.push("/login"),
   });
+  const user = session?.user;
+
   const [currentProfileId, setCurrentProfileId] = useState<string>();
+
+  const profilesQueryKey = ["users", user?.id, "profiles"];
+  const { isSuccess: profilesLoaded, data: profiles } = useQuery(
+    profilesQueryKey,
+    () =>
+      axios
+        .get<GetProfilesResponse>("/api/user/profiles")
+        .then(({ data: { profiles } }) => profiles),
+    { enabled: userStatus === "authenticated" }
+  );
 
   const changeCurrentProfile = (id: string) => {
     localStorage.setItem(LOCAL_STORAGE_CURRENT_PROFILE_KEY, id);
     setCurrentProfileId(id);
   };
+  const invalidateProfiles = () =>
+    queryClient.invalidateQueries(profilesQueryKey);
 
   useEffect(() => {
-    if (!(status === "authenticated" && data.user.signupComplete)) return;
+    if (!(userStatus === "authenticated" && session.user.signupComplete))
+      return;
     const currentProfileId = localStorage.getItem(
       LOCAL_STORAGE_CURRENT_PROFILE_KEY
     );
     setCurrentProfileId(currentProfileId ?? undefined);
-  }, [status, data]);
+  }, [userStatus, session]);
 
-  if (status === "loading") {
+  if (userStatus === "loading" || !profilesLoaded) {
     return (
-      <UserProfileContext.Provider value={{ loading: true }}>
+      <UserProfileContext.Provider
+        value={{ loading: true, invalidateProfiles }}
+      >
         {children}
       </UserProfileContext.Provider>
     );
   }
 
-  const { user } = data;
-  const currentProfile =
-    user.profiles!.find(({ id }) => id === currentProfileId) ??
-    user.profiles![0];
-
-  if (!user.signupComplete) {
+  if (!session.user.signupComplete) {
     throw new Error(
       "This component can only be used with full signed up users"
     );
   }
+
+  const currentProfile =
+    profiles.find(({ id }) => id === currentProfileId) ?? profiles[0];
 
   const getWatchlistMovieStatus = async (movieId: number) => {
     const entry = currentProfile.movieWatchlist.find(
@@ -103,11 +127,13 @@ export const UserProfileProvider: FC<UserProfileProviderProps> = ({
     <UserProfileContext.Provider
       value={{
         loading: false,
-        user,
+        profiles,
         currentProfile,
         changeCurrentProfile,
         getWatchlistMovieStatus,
         addMovieToWatchlist,
+        canUserCreateNewProfile: user!.canCreateNewProfile!,
+        invalidateProfiles,
       }}
     >
       {children}

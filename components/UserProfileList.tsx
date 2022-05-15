@@ -21,9 +21,10 @@ export type UserProfileListProps = {
 const UserProfileList: FC<UserProfileListProps> = ({ sx }) => {
   const {
     loading: profileLoading,
-    user,
+    profiles,
     currentProfile,
     changeCurrentProfile,
+    canUserCreateNewProfile,
   } = useUserProfile();
 
   const [listOpen, setListOpen] = useState<boolean>(false);
@@ -63,7 +64,7 @@ const UserProfileList: FC<UserProfileListProps> = ({ sx }) => {
         }}
       >
         {[
-          ...user.profiles!.map(({ id, name }) => (
+          ...profiles.map(({ id, name }) => (
             <MenuItem
               key={id}
               selected={id === currentProfile?.id}
@@ -72,13 +73,11 @@ const UserProfileList: FC<UserProfileListProps> = ({ sx }) => {
               <ListItemText>{name}</ListItemText>
             </MenuItem>
           )),
-          ...(user.canCreateNewProfile
+          ...(canUserCreateNewProfile
             ? [
-                ...(user.profiles!.length > 0
-                  ? [<Divider key="@divider" />]
-                  : []),
+                ...(profiles.length > 0 ? [<Divider key="@divider" />] : []),
                 <NextLink key="@new" href="/profiles/create" passHref>
-                  <MenuItem>
+                  <MenuItem LinkComponent="a">
                     <ListItemIcon>
                       <AddIcon fontSize="small" />
                     </ListItemIcon>
