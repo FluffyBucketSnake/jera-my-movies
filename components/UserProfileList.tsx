@@ -10,57 +10,31 @@ import {
   MenuItem,
   SxProps,
 } from "@mui/material";
-import { useSession } from "next-auth/react";
+import { useUserProfile } from "context/UserProfileContext";
 import NextLink from "next/link";
-import { useRouter } from "next/router";
-import React, { FC, useEffect, useRef, useState } from "react";
-
-const LOCAL_STORAGE_CURRENT_PROFILE_KEY = "mymovies:current_profile";
+import React, { FC, useRef, useState } from "react";
 
 export type UserProfileListProps = {
   sx?: SxProps;
 };
 
 const UserProfileList: FC<UserProfileListProps> = ({ sx }) => {
-  const router = useRouter();
-  const { status, data } = useSession({
-    required: true,
-    onUnauthenticated: () => router.push("/login"),
-  });
+  const {
+    loading: profileLoading,
+    user,
+    currentProfile,
+    changeCurrentProfile,
+  } = useUserProfile();
 
   const [listOpen, setListOpen] = useState<boolean>(false);
-  const [currentProfileId, setCurrentProfileId] = useState<string>();
 
   const listAnchorRef = useRef<HTMLButtonElement | null>(null);
 
   const openList = () => setListOpen(true);
   const closeList = () => setListOpen(false);
-  const changeCurrentProfile = (id: string) => {
-    localStorage.setItem(LOCAL_STORAGE_CURRENT_PROFILE_KEY, id);
-    setCurrentProfileId(id);
-  };
 
-  useEffect(() => {
-    if (!(status === "authenticated" && data.user.signupComplete)) return;
-    const currentProfileId = localStorage.getItem(
-      LOCAL_STORAGE_CURRENT_PROFILE_KEY
-    );
-    setCurrentProfileId(currentProfileId ?? undefined);
-  }, [status, data]);
-
-  if (status === "loading") {
+  if (profileLoading) {
     return <CircularProgress color="inherit" size="1rem" sx={sx} />;
-  }
-
-  const { user } = data;
-  const currentProfile =
-    user.profiles!.find(({ id }) => id === currentProfileId) ??
-    user.profiles![0];
-
-  if (!user.signupComplete) {
-    throw new Error(
-      "This component can only be used with full signed up users"
-    );
   }
 
   return (
