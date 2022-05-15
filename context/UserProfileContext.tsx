@@ -26,6 +26,7 @@ type LoadingUserProfileContextData = {
   currentProfile?: undefined;
   canUserCreateNewProfile?: undefined;
   changeCurrentProfile?: undefined;
+  getWatchlistMovies?: undefined;
   getWatchlistMovieStatus?: undefined;
   addMovieToWatchlist?: undefined;
   markMovieAsWatched?: undefined;
@@ -38,6 +39,7 @@ type LoadedUserProfileContextData = {
   currentProfile: ProfileDTO;
   canUserCreateNewProfile: boolean;
   changeCurrentProfile: (id: string) => void;
+  getWatchlistMovies: () => Promise<number[]>;
   getWatchlistMovieStatus: (movieId: number) => Promise<WatchlistMovieStatus>;
   addMovieToWatchlist: (movieId: number) => Promise<void>;
   markMovieAsWatched: (movieId: number) => Promise<void>;
@@ -121,6 +123,13 @@ export const UserProfileProvider: FC<UserProfileProviderProps> = ({
     return entry.watched ? "watched" : "unwatched";
   };
 
+  const getWatchlistMovies = async () => {
+    const response = await axios.get<GetWatchlistResponse>(
+      `/api/user/profiles/${currentProfile.id}/watchlist`
+    );
+    return response.data.entries.map(({ movieId }) => movieId);
+  };
+
   const addMovieToWatchlist = async (movieId: number) => {
     await axios.post<any, any, AddMovieToWatchlistRequest>(
       `/api/user/profiles/${currentProfileId}/watchlist`,
@@ -142,6 +151,7 @@ export const UserProfileProvider: FC<UserProfileProviderProps> = ({
         profiles,
         currentProfile,
         changeCurrentProfile,
+        getWatchlistMovies,
         getWatchlistMovieStatus,
         addMovieToWatchlist,
         markMovieAsWatched,

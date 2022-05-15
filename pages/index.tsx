@@ -2,6 +2,7 @@ import { CircularProgress } from "@mui/material";
 import { Box } from "@mui/system";
 import Movie from "components/Movie";
 import MovieFilterForm from "components/MovieFilterForm";
+import MovieList from "components/MovieList";
 import DefaultLayout from "layouts/DefaultLayout";
 import { withAuthentication } from "middlewares/frontend/withAuthentication";
 import type { NextPage } from "next";
@@ -33,33 +34,7 @@ const Homepage: NextPage = () => {
   return (
     <DefaultLayout title="Home">
       <MovieFilterForm onSubmit={updateFilter} />
-      <Box position="relative" width={1}>
-        {fetchingMovies && (
-          <CircularProgress
-            sx={{
-              position: "absolute",
-              left: "50%",
-              mt: 4,
-              transform: "translate(-50%)",
-            }}
-          />
-        )}
-        {movieIds && (
-          <Box
-            component="ul"
-            display="flex"
-            justifyContent="center"
-            flexDirection="row"
-            flexWrap="wrap"
-            width={1}
-            p={0}
-          >
-            {movieIds.map((movieId) => (
-              <Movie key={movieId} movieId={movieId} />
-            ))}
-          </Box>
-        )}
-      </Box>
+      <MovieList movieIds={movieIds} loading={fetchingMovies} />
     </DefaultLayout>
   );
 };

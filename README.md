@@ -29,7 +29,7 @@ Trabalho para o desafio técnico do processo seletivo realizado pela Jera
   - [x] Rota para obter a watchlist de um perfil
   - [x] Criar uma rota para marcar filme como assistido
   - [x] Atualizar o componente de filme
-  - [ ] Criar uma página para listar os filmes a assistir do perfil atual
+  - [x] Criar uma página para listar os filmes a assistir do perfil atual
 - [ ] Desenvolver o sistema de lista de filmes sugeridos
   - [ ] Criar uma rota para obter os filmes sugeridos ao perfil
   - [ ] Criar uma página com a lista de filmes sugeridos

@@ -1,5 +1,4 @@
 import { CssBaseline } from "@mui/material";
-import { UserProfileProvider } from "context/UserProfileContext";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import type { AppProps } from "next/app";
@@ -12,10 +11,8 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <QueryClientProvider client={queryClient}>
       <SessionProvider>
-        <UserProfileProvider>
-          <CssBaseline />
-          <Component {...pageProps} />
-        </UserProfileProvider>
+        <CssBaseline />
+        <Component {...pageProps} />
       </SessionProvider>
       <ReactQueryDevtools />
     </QueryClientProvider>
