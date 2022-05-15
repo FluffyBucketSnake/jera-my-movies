@@ -22,12 +22,13 @@ Trabalho para o desafio técnico do processo seletivo realizado pela Jera
   - [x] Criar uma rota para criar perfis
   - [x] Criar uma rota para buscar perfis
   - [x] Criar página de criação de perfil
-    - [ ] FIX: NextAuth não atualizando o estado da sessão quando um perfil é criado
+    - [x] FIX: NextAuth não atualizando o estado da sessão quando um perfil é criado
   - [x] Adicionar seletor de perfil atual
-- [ ] Desenvolver o gerenciamento de lista de filmes para assistir
-  - [ ] Criar uma rota para adicionar filmes a watchlist de um perfil
-  - [ ] Rota para obter a watchlist de um perfil
-  - [ ] Atualizar o componente de filme
+- [x] Desenvolver o gerenciamento de lista de filmes para assistir
+  - [x] Criar uma rota para adicionar filmes a watchlist de um perfil
+  - [x] Rota para obter a watchlist de um perfil
+  - [x] Criar uma rota para marcar filme como assistido
+  - [x] Atualizar o componente de filme
   - [ ] Criar uma página para listar os filmes a assistir do perfil atual
 - [ ] Desenvolver o sistema de lista de filmes sugeridos
   - [ ] Criar uma rota para obter os filmes sugeridos ao perfil

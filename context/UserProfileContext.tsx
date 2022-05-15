@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { GetProfilesResponse } from "pages/api/user/profiles";
 import { GetWatchlistResponse } from "pages/api/user/profiles/[profileId]/watchlist";
 import { AddMovieToWatchlistRequest } from "pages/api/user/profiles/[profileId]/watchlist";
+import { UpdateWatchlistMovieRequest } from "pages/api/user/profiles/[profileId]/watchlist/[movieId]";
 import {
   createContext,
   FC,
@@ -27,6 +28,7 @@ type LoadingUserProfileContextData = {
   changeCurrentProfile?: undefined;
   getWatchlistMovieStatus?: undefined;
   addMovieToWatchlist?: undefined;
+  markMovieAsWatched?: undefined;
   invalidateProfiles: () => void;
 };
 
@@ -38,6 +40,7 @@ type LoadedUserProfileContextData = {
   changeCurrentProfile: (id: string) => void;
   getWatchlistMovieStatus: (movieId: number) => Promise<WatchlistMovieStatus>;
   addMovieToWatchlist: (movieId: number) => Promise<void>;
+  markMovieAsWatched: (movieId: number) => Promise<void>;
   invalidateProfiles: () => void;
 };
 
@@ -110,7 +113,7 @@ export const UserProfileProvider: FC<UserProfileProviderProps> = ({
 
   const getWatchlistMovieStatus = async (movieId: number) => {
     const response = await axios.get<GetWatchlistResponse>(
-      `/api/user/profiles/${currentProfile.id}/entries`
+      `/api/user/profiles/${currentProfile.id}/watchlist`
     );
     const watchlist = response.data.entries;
     const entry = watchlist.find((entry) => entry.movieId === movieId);
@@ -125,6 +128,13 @@ export const UserProfileProvider: FC<UserProfileProviderProps> = ({
     );
   };
 
+  const markMovieAsWatched = async (movieId: number) => {
+    await axios.put<any, any, UpdateWatchlistMovieRequest>(
+      `/api/user/profiles/${currentProfileId}/watchlist/${movieId}`,
+      { watched: true }
+    );
+  };
+
   return (
     <UserProfileContext.Provider
       value={{
@@ -134,6 +144,7 @@ export const UserProfileProvider: FC<UserProfileProviderProps> = ({
         changeCurrentProfile,
         getWatchlistMovieStatus,
         addMovieToWatchlist,
+        markMovieAsWatched,
         canUserCreateNewProfile: user!.canCreateNewProfile!,
         invalidateProfiles,
       }}

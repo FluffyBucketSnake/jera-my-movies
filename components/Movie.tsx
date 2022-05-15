@@ -1,5 +1,6 @@
 import AddToWatchlistIcon from "@mui/icons-material/AddBoxOutlined";
 import AddedToWatchlistIcon from "@mui/icons-material/Check";
+import MarkAsWatchedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import {
   Box,
   Card,
@@ -23,7 +24,7 @@ const Movie: FC<MovieProps> = ({ movieId }) => {
   const [fetchingMovie, setFetchingMovie] = useState<boolean>(false);
   const {
     status: watchlistStatus,
-    movieStatus: watchlistMovieStatus,
+    markAsWatched,
     addToWatchlist,
   } = useWatchlistStatus(movieId);
   const [movie, setMovie] = useState<MovieDTO>();
@@ -102,17 +103,23 @@ const Movie: FC<MovieProps> = ({ movieId }) => {
                     </IconButton>
                   </NextLink>
                 )}
-                {watchlistStatus === "loaded" &&
-                  (watchlistMovieStatus !== "notadded" ? (
-                    <AddedToWatchlistIcon />
-                  ) : (
-                    <IconButton
-                      aria-label="Add to watchlist"
-                      onClick={() => addToWatchlist()}
-                    >
-                      <AddToWatchlistIcon />
-                    </IconButton>
-                  ))}
+                {watchlistStatus === "notadded" && (
+                  <IconButton
+                    aria-label="Add to watchlist"
+                    onClick={() => addToWatchlist()}
+                  >
+                    <AddToWatchlistIcon />
+                  </IconButton>
+                )}
+                {watchlistStatus === "unwatched" && (
+                  <IconButton
+                    aria-label="Add to watchlist"
+                    onClick={() => markAsWatched()}
+                  >
+                    <MarkAsWatchedIcon />
+                  </IconButton>
+                )}
+                {watchlistStatus === "watched" && <AddedToWatchlistIcon />}
               </Box>
               {movie.poster ? (
                 <Image
