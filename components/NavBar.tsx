@@ -13,6 +13,7 @@ import {
   Divider,
 } from "@mui/material";
 import { signOut } from "next-auth/react";
+import NextLink from "next/link";
 import { title } from "process";
 import React, { FC, useState } from "react";
 import UserProfileList from "./UserProfileList";
@@ -55,9 +56,21 @@ const NavBar: FC<NavBarProps> = ({ title }) => {
       <Drawer anchor="left" open={menuOpen} onClose={() => setMenuOpen(false)}>
         <Box component="nav" sx={{ width: 240 }}>
           <List>
-            <ListItem button>
-              <ListItemText primary="Home" />
-            </ListItem>
+            <NextLink href="/" passHref>
+              <ListItem button>
+                <ListItemText primary="Home" />
+              </ListItem>
+            </NextLink>
+            <NextLink href="/watchlist" passHref>
+              <ListItem button>
+                <ListItemText primary="Watchlist" />
+              </ListItem>
+            </NextLink>
+            <NextLink href="/suggested" passHref>
+              <ListItem button>
+                <ListItemText primary="Suggested" />
+              </ListItem>
+            </NextLink>
             <Divider />
             <ListItem button onClick={() => signOut()}>
               <ListItemText primary="Logout" />
