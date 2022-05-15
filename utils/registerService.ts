@@ -6,7 +6,7 @@ export const registerService = <T>(name: string, initFn: () => T) => {
       globalThis[name] = initFn();
     }
     // @ts-ignore
-    return globalThis[name];
+    return globalThis[name] as T;
   }
   return initFn();
 };
