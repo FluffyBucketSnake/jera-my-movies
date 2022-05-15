@@ -30,9 +30,9 @@ Trabalho para o desafio técnico do processo seletivo realizado pela Jera
   - [x] Criar uma rota para marcar filme como assistido
   - [x] Atualizar o componente de filme
   - [x] Criar uma página para listar os filmes a assistir do perfil atual
-- [ ] Desenvolver o sistema de lista de filmes sugeridos
-  - [ ] Criar uma rota para obter os filmes sugeridos ao perfil
-  - [ ] Criar uma página com a lista de filmes sugeridos
+- [x] Desenvolver o sistema de lista de filmes sugeridos
+  - [x] Criar uma rota para obter os filmes sugeridos ao perfil
+  - [x] Criar uma página com a lista de filmes sugeridos
 - [ ] Limpar o código da aplicação
 - [ ] Desenvolver o compartilhamento de filmes
 - [ ] Desenvolver o agendamento de filmes
