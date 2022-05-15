@@ -7,7 +7,7 @@ import { NextPage } from "next";
 import { getSession } from "next-auth/react";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
-import { FormEvent, useState } from "react";
+import { FC, FormEvent, useState } from "react";
 import { useMutation } from "react-query";
 
 export type Props = {
@@ -15,9 +15,41 @@ export type Props = {
 };
 
 const CreateProfilePage: NextPage<Props> = ({ forbidden }) => {
+  return (
+    <DefaultLayout title="Create a new profile">
+      {!forbidden ? (
+        <CreateProfile />
+      ) : (
+        <Box
+          component="section"
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          p={4}
+        >
+          <Typography
+            component="span"
+            variant="h6"
+            color="error"
+            align="center"
+          >
+            You already have the max amount of profiles
+          </Typography>
+          <NextLink href="/" passHref>
+            <Button color="primary" sx={{ mt: 2 }}>
+              Go back
+            </Button>
+          </NextLink>
+        </Box>
+      )}
+    </DefaultLayout>
+  );
+};
+
+const CreateProfile: FC = () => {
   const router = useRouter();
 
-  const { loading, invalidateProfiles } = useUserProfile();
+  const { loading: loadingProfiles, invalidateProfiles } = useUserProfile();
 
   const [profileName, setProfileName] = useState<string>("");
 
@@ -44,53 +76,26 @@ const CreateProfilePage: NextPage<Props> = ({ forbidden }) => {
   };
 
   const creatingProfile = createProfileMutation.isLoading;
-
   return (
-    <DefaultLayout title="Create a new profile">
-      {!forbidden ? (
-        <Box component="form" display="flex" p={4} onSubmit={createProfile}>
-          <TextField
-            label="Profile name"
-            name="name"
-            type="text"
-            sx={{ flex: 1 }}
-            onChange={(e) => setProfileName(e.target.value)}
-          />
-          <Button
-            type="submit"
-            color="primary"
-            variant="contained"
-            size="large"
-            disabled={creatingProfile}
-            sx={{ ml: 2 }}
-          >
-            Create new profile
-          </Button>
-        </Box>
-      ) : (
-        <Box
-          component="section"
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          p={4}
-        >
-          <Typography
-            component="span"
-            variant="h6"
-            color="error"
-            align="center"
-          >
-            You already have the max amount of profiles
-          </Typography>
-          <NextLink href="/" passHref>
-            <Button color="primary" sx={{ mt: 2 }}>
-              Go back
-            </Button>
-          </NextLink>
-        </Box>
-      )}
-    </DefaultLayout>
+    <Box component="form" display="flex" p={4} onSubmit={createProfile}>
+      <TextField
+        label="Profile name"
+        name="name"
+        type="text"
+        sx={{ flex: 1 }}
+        onChange={(e) => setProfileName(e.target.value)}
+      />
+      <Button
+        type="submit"
+        color="primary"
+        variant="contained"
+        size="large"
+        disabled={creatingProfile || loadingProfiles}
+        sx={{ ml: 2 }}
+      >
+        Create new profile
+      </Button>
+    </Box>
   );
 };
 
