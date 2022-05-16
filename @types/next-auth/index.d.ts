@@ -7,9 +7,6 @@ declare module "next-auth" {
       id: string;
       name?: string;
       email: string;
-      signupComplete: boolean;
-      canCreateNewProfile?: boolean;
-      profiles?: ProfileDTO[];
     };
   }
 }

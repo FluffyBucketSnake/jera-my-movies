@@ -52,24 +52,13 @@ export default NextAuth({
   ],
   session: { strategy: "jwt" },
   callbacks: {
-    async session({ session, user, token }) {
-      session.user = token.user as any;
+    async session({ session, token }) {
+      session.user.id = token.id as any;
       return session;
     },
     async jwt({ token, user }) {
       if (user) {
-        const userData = await prisma.userData.findUnique({
-          where: { userId: user.id },
-          include: { profiles: { include: { movieWatchlist: true } } },
-        });
-        const signupComplete = !!userData;
-        user.id = user.id;
-        user.signupComplete = signupComplete;
-        user.canCreateNewProfile = !!userData && userData.profiles.length < 4;
-        user.profiles =
-          (userData && userData.profiles.map(convertProfileModelToDTO)) ??
-          undefined;
-        token.user = user;
+        token.id = user.id;
       }
       return token;
     },

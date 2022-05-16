@@ -1,47 +1,24 @@
-import { Box, Button, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  TextField,
+  Typography,
+} from "@mui/material";
 import axios from "axios";
 import { useUserProfile } from "context/UserProfileContext";
 import DefaultLayout from "layouts/DefaultLayout";
 import { withAuthentication } from "middlewares/frontend/withAuthentication";
 import { NextPage } from "next";
-import { getSession } from "next-auth/react";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
 import { FC, FormEvent, useState } from "react";
 import { useMutation } from "react-query";
 
-export type Props = {
-  forbidden: boolean;
-};
-
-const CreateProfilePage: NextPage<Props> = ({ forbidden }) => {
+const CreateProfilePage: NextPage = () => {
   return (
     <DefaultLayout title="Create a new profile">
-      {!forbidden ? (
-        <CreateProfile />
-      ) : (
-        <Box
-          component="section"
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          p={4}
-        >
-          <Typography
-            component="span"
-            variant="h6"
-            color="error"
-            align="center"
-          >
-            You already have the max amount of profiles
-          </Typography>
-          <NextLink href="/" passHref>
-            <Button color="primary" sx={{ mt: 2 }}>
-              Go back
-            </Button>
-          </NextLink>
-        </Box>
-      )}
+      <CreateProfile />
     </DefaultLayout>
   );
 };
@@ -49,7 +26,11 @@ const CreateProfilePage: NextPage<Props> = ({ forbidden }) => {
 const CreateProfile: FC = () => {
   const router = useRouter();
 
-  const { loading: loadingProfiles, invalidateProfiles } = useUserProfile();
+  const {
+    loading: loadingProfiles,
+    canUserCreateNewProfile,
+    invalidateProfiles,
+  } = useUserProfile();
 
   const [profileName, setProfileName] = useState<string>("");
 
@@ -76,6 +57,42 @@ const CreateProfile: FC = () => {
   };
 
   const creatingProfile = createProfileMutation.isLoading;
+
+  if (loadingProfiles) {
+    return (
+      <Box
+        component="section"
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        p={4}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (!canUserCreateNewProfile) {
+    return (
+      <Box
+        component="section"
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        p={4}
+      >
+        <Typography component="span" variant="h6" color="error" align="center">
+          You already have the max amount of profiles
+        </Typography>
+        <NextLink href="/" passHref>
+          <Button color="primary" sx={{ mt: 2 }}>
+            Go back
+          </Button>
+        </NextLink>
+      </Box>
+    );
+  }
+
   return (
     <Box component="form" display="flex" p={4} onSubmit={createProfile}>
       <TextField
@@ -99,10 +116,8 @@ const CreateProfile: FC = () => {
   );
 };
 
-export const getServerSideProps = withAuthentication<Props>(async (context) => {
-  const session = (await getSession(context))!;
-  const forbidden = !session.user.canCreateNewProfile;
-  return { props: { forbidden } };
-});
+export const getServerSideProps = withAuthentication(async (context) => ({
+  props: {},
+}));
 
 export default CreateProfilePage;

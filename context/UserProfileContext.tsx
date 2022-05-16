@@ -2,6 +2,7 @@ import axios from "axios";
 import { ProfileDTO } from "dtos/Profile";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import { GetUserDataResponse } from "pages/api/user";
 import { GetProfilesResponse } from "pages/api/user/profiles";
 import { GetSuggestedMoviesResponse } from "pages/api/user/profiles/[profileId]/suggested";
 import { GetWatchlistResponse } from "pages/api/user/profiles/[profileId]/watchlist";
@@ -71,7 +72,14 @@ export const UserProfileProvider: FC<UserProfileProviderProps> = ({
 
   const [currentProfileId, setCurrentProfileId] = useState<string>();
 
-  const profilesQueryKey = ["users", user?.id, "profiles"];
+  const userQueryKey = ["users", user?.id];
+  const { isSuccess: userLoaded, data: userData } = useQuery(
+    userQueryKey,
+    () => axios.get<GetUserDataResponse>("/api/user").then(({ data }) => data),
+    { enabled: userStatus === "authenticated" }
+  );
+
+  const profilesQueryKey = [...userQueryKey, "profiles"];
   const { isSuccess: profilesLoaded, data: profiles } = useQuery(
     profilesQueryKey,
     () =>
@@ -89,15 +97,14 @@ export const UserProfileProvider: FC<UserProfileProviderProps> = ({
     queryClient.invalidateQueries(profilesQueryKey);
 
   useEffect(() => {
-    if (!(userStatus === "authenticated" && session.user.signupComplete))
-      return;
+    if (!userData?.signupComplete) return;
     const currentProfileId = localStorage.getItem(
       LOCAL_STORAGE_CURRENT_PROFILE_KEY
     );
     setCurrentProfileId(currentProfileId ?? undefined);
-  }, [userStatus, session]);
+  }, [userData]);
 
-  if (userStatus === "loading" || !profilesLoaded) {
+  if (userStatus === "loading" || !userLoaded || !profilesLoaded) {
     return (
       <UserProfileContext.Provider
         value={{ loading: true, invalidateProfiles }}
@@ -107,7 +114,7 @@ export const UserProfileProvider: FC<UserProfileProviderProps> = ({
     );
   }
 
-  if (!session.user.signupComplete) {
+  if (!userData.signupComplete) {
     throw new Error(
       "This component can only be used with full signed up users"
     );
@@ -166,7 +173,7 @@ export const UserProfileProvider: FC<UserProfileProviderProps> = ({
         getWatchlistMovieStatus,
         addMovieToWatchlist,
         markMovieAsWatched,
-        canUserCreateNewProfile: user!.canCreateNewProfile!,
+        canUserCreateNewProfile: userData.canCreateNewProfile,
         invalidateProfiles,
       }}
     >

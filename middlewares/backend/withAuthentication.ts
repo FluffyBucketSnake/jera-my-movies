@@ -9,8 +9,13 @@ export type WithAuthenticationAPIHandler = (
   user: User & { info: UserData }
 ) => Promise<void>;
 
+export type WithAuthenticationOptions = {
+  signupCompleteOnly?: boolean;
+};
+
 export function withAuthentication(
-  handler: WithAuthenticationAPIHandler
+  handler: WithAuthenticationAPIHandler,
+  { signupCompleteOnly = true }: WithAuthenticationOptions = {}
 ): NextApiHandler {
   return async (req, res) => {
     const session = await getSession({ req });
@@ -20,16 +25,16 @@ export function withAuthentication(
         .json({ error: { message: "This route needs authentication" } });
       return;
     }
-    if (!session.user.signupComplete) {
-      res.status(403).json({
-        error: { message: "This route only allows fully signup users" },
-      });
-      return;
-    }
     const user = (await prisma.user.findUnique({
       where: { id: session.user.id },
       include: { info: true },
     }))!;
+    if (signupCompleteOnly && !user.info) {
+      res.status(403).json({
+        error: { message: "This route only allows fully signed up users" },
+      });
+      return;
+    }
     // This middleware only allows fully signup users, so info must not be null
     await handler(req, res, user as User & { info: UserData });
   };

@@ -6,6 +6,7 @@ import { getSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useRef } from "react";
 import { FormEvent, useState } from "react";
+import { GetUserDataResponse } from "./api/user";
 
 export type SignUpPageProps = {
   hydratedFields: HydratedFields;
@@ -92,7 +93,13 @@ export const getServerSideProps: GetServerSideProps<SignUpPageProps> = async (
 ) => {
   const session = await getSession(context);
   if (session) {
-    if (session.user.signupComplete) {
+    const userData = await axios
+      .get<GetUserDataResponse>("/api/user", {
+        baseURL: process.env.NEXTAUTH_URL,
+        headers: { Cookie: context.req.headers["cookie"] as string },
+      })
+      .then(({ data }) => data);
+    if (userData.signupComplete) {
       return { redirect: { permanent: false, destination: "/" } };
     }
     return { props: { hydratedFields: { email: session.user.email } } };

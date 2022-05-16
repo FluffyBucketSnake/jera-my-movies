@@ -42,7 +42,6 @@ async function SignUpRoute(req: NextApiRequest, res: NextApiResponse) {
     }
   } catch (err) {
     if (err instanceof z.ZodError) {
-      console.log(err);
       res.status(400).json({ message: err.message });
       return;
     }
