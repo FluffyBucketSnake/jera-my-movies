@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "build": "prisma migrate deploy && next build",
+    "start": "next start --port ${POST-3000}",
     "lint": "next lint"
   },
   "dependencies": {
