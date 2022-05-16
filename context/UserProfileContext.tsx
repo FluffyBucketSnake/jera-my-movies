@@ -142,14 +142,14 @@ export const UserProfileProvider: FC<UserProfileProviderProps> = ({
 
   const addMovieToWatchlist = async (movieId: number) => {
     await axios.post<any, any, AddMovieToWatchlistRequest>(
-      `/api/user/profiles/${currentProfileId}/watchlist`,
+      `/api/user/profiles/${currentProfile.id}/watchlist`,
       { movieId }
     );
   };
 
   const markMovieAsWatched = async (movieId: number) => {
     await axios.put<any, any, UpdateWatchlistMovieRequest>(
-      `/api/user/profiles/${currentProfileId}/watchlist/${movieId}`,
+      `/api/user/profiles/${currentProfile.id}/watchlist/${movieId}`,
       { watched: true }
     );
   };
