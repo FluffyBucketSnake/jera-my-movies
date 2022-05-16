@@ -37,8 +37,9 @@ export default NextAuth({
             credentials.password,
             user.credential.password
           ))
-        )
+        ) {
           return null;
+        }
         const { credential, ...userData } = user;
         return userData;
       },
@@ -49,22 +50,28 @@ export default NextAuth({
       clientSecret: FACEBOOK_CLIENT_SECRET,
     }),
   ],
+  session: { strategy: "jwt" },
   callbacks: {
-    async session({ session, user }) {
-      const userData = await prisma.userData.findUnique({
-        where: { userId: user.id },
-        include: { profiles: { include: { movieWatchlist: true } } },
-      });
-      const profileCount = await prisma.profile.count;
-      const signupComplete = !!userData;
-      session.user.id = user.id;
-      session.user.signupComplete = signupComplete;
-      session.user.canCreateNewProfile =
-        !!userData && userData.profiles.length < 4;
-      session.user.profiles =
-        (userData && userData.profiles.map(convertProfileModelToDTO)) ??
-        undefined;
+    async session({ session, user, token }) {
+      session.user = token.user as any;
       return session;
+    },
+    async jwt({ token, user }) {
+      if (user) {
+        const userData = await prisma.userData.findUnique({
+          where: { userId: user.id },
+          include: { profiles: { include: { movieWatchlist: true } } },
+        });
+        const signupComplete = !!userData;
+        user.id = user.id;
+        user.signupComplete = signupComplete;
+        user.canCreateNewProfile = !!userData && userData.profiles.length < 4;
+        user.profiles =
+          (userData && userData.profiles.map(convertProfileModelToDTO)) ??
+          undefined;
+        token.user = user;
+      }
+      return token;
     },
   },
 });
