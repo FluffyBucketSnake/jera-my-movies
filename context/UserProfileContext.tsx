@@ -173,7 +173,7 @@ export const UserProfileProvider: FC<UserProfileProviderProps> = ({
         getWatchlistMovieStatus,
         addMovieToWatchlist,
         markMovieAsWatched,
-        canUserCreateNewProfile: userData.canCreateNewProfile,
+        canUserCreateNewProfile: userData.canCreateNewProfile!,
         invalidateProfiles,
       }}
     >

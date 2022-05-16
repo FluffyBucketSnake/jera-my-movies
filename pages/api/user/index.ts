@@ -7,7 +7,7 @@ import firstOrSelf from "utils/firstOrSelf";
 
 export type GetUserDataResponse = {
   signupComplete: boolean;
-  canCreateNewProfile: boolean;
+  canCreateNewProfile?: boolean;
 };
 
 async function GetProfileRoute(
@@ -15,10 +15,13 @@ async function GetProfileRoute(
   res: NextApiResponse,
   user: User & { info: UserData }
 ) {
-  const profileCount = await prisma.profile.count({
-    where: { userDataId: user.info.id },
-  });
-  const canCreateNewProfile = profileCount < 4;
+  const profileCount =
+    user.info &&
+    (await prisma.profile.count({
+      where: { userDataId: user.info.id },
+    }));
+  const canCreateNewProfile =
+    profileCount != null ? profileCount < 4 : undefined;
   const resBody: GetUserDataResponse = {
     signupComplete: !!user.info,
     canCreateNewProfile,
