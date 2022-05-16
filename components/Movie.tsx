@@ -9,9 +9,9 @@ import {
   IconButton,
   Typography,
 } from "@mui/material";
+import { styled } from "@mui/system";
 import { MovieDTO } from "dtos/Movie";
 import { useWatchlistStatus } from "hooks/useWatchlistStatus";
-import Image from "next/image";
 import NextLink from "next/link";
 import { GetMovieResponse } from "pages/api/movies/[movieId]";
 import React, { FC, useEffect, useState } from "react";
@@ -19,6 +19,12 @@ import React, { FC, useEffect, useState } from "react";
 export type MovieProps = {
   movieId: number;
 };
+
+const Image = styled("img")({
+  width: "100%",
+  height: "100%",
+  objectFit: "cover",
+});
 
 const Movie: FC<MovieProps> = ({ movieId }) => {
   const [fetchingMovie, setFetchingMovie] = useState<boolean>(false);
@@ -62,6 +68,7 @@ const Movie: FC<MovieProps> = ({ movieId }) => {
           alignItems: "center",
           width: "100%",
           height: "100%",
+          maxHeight: "70%",
           padding: 0,
         }}
       >
@@ -122,12 +129,7 @@ const Movie: FC<MovieProps> = ({ movieId }) => {
                 {watchlistStatus === "watched" && <AddedToWatchlistIcon />}
               </Box>
               {movie.poster ? (
-                <Image
-                  src={movie.poster.src}
-                  layout="fill"
-                  objectFit="cover"
-                  alt={movie.poster.src}
-                />
+                <Image src={movie.poster.src} alt={movie.poster.src} />
               ) : (
                 <Typography variant="caption" align="center">
                   This movie does not have poster
