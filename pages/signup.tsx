@@ -3,6 +3,7 @@ import axios from "axios";
 import { LoginLayout } from "layouts/LoginLayout";
 import { GetServerSideProps, NextPage } from "next";
 import { getSession } from "next-auth/react";
+import { useRouter } from "next/router";
 import { useRef } from "react";
 import { FormEvent, useState } from "react";
 
@@ -15,6 +16,7 @@ export type HydratedFields = {
 };
 
 const SignUpPage: NextPage<SignUpPageProps> = ({ hydratedFields }) => {
+  const router = useRouter();
   const [signingUp, setSigningUp] = useState<boolean>(false);
 
   const formRef = useRef<HTMLFormElement | null>(null);
@@ -31,6 +33,7 @@ const SignUpPage: NextPage<SignUpPageProps> = ({ hydratedFields }) => {
     };
     try {
       await axios.post("/api/user/signup", data);
+      router.push("/login");
     } catch (err) {
       alert("Failed to sign up. Try again later.");
     }
